@@ -58,7 +58,7 @@ namespace :mage do
 
     desc  'Create compressed archive of site without media or useless files.'
     task :files do
-      sh %{tar vczf #{parent_path}/#{project}.#{today}.tgz --exclude='./media/*' --exclude='./var/*' --exclude='./.git' .}
+      sh %{cd #{current_path} && tar vczf #{parent_path}/#{project}.#{today}.tgz --exclude='./media/*' --exclude='./var/*' --exclude='./.git' .}
     end
   end
 
