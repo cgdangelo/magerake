@@ -64,4 +64,9 @@ namespace :mage do
 
   desc 'Runs backup:db and backup:files to create full site backup.'
   task :backup => ["backup:db", "backup:files"]
+
+  desc 'Reindex everything.'
+  task :reindex do
+    sh %{cd #{current_path}/shell && php -f indexer.php -- --reindexall}
+  end
 end
