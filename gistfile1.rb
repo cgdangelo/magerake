@@ -1,4 +1,4 @@
-current_path = File.dirname(__FILE__)                                                                                                                        
+current_path = File.dirname(__FILE__)
 parent_path = File.dirname(current_path)
 project = File.basename(current_path)
 
@@ -20,14 +20,18 @@ namespace :mage do
     end
   end
 
+  desc 'Watch both Magento logs simultaneously.'
+  task :watch do
+    sh %{cd #{current_path} && tail -f var/log/system.log -f var/log/exception.log}
+  end
+
   namespace :backup do
     today = %x{date +"%Y%m%d"}.chomp
 
     desc 'Dump the database to file without log tables.'
     task :db do
       require 'nokogiri'
-      doc = Nokogiri::XML(File.open('app/etc/local.xml'))
-
+      doc = Nokogiri::XML(File.open("#{current_path}/app/etc/local.xml"))
       host = doc.xpath('///default_setup/connection/host').first.text
       if !host.empty? then
         host = "-h#{host}"
@@ -53,11 +57,11 @@ namespace :mage do
     end
 
     desc  'Create compressed archive of site without media or useless files.'
-    task :files do                                                                                                                                           
+    task :files do
       sh %{tar vczf #{parent_path}/#{project}.#{today}.tgz --exclude='./media/*' --exclude='./var/*' --exclude='./.git' .}
     end
   end
 
-  desc 'Runs backup:db and backup:files to create full site backup.'                                                                                         
+  desc 'Runs backup:db and backup:files to create full site backup.'
   task :backup => ["backup:db", "backup:files"]
 end
