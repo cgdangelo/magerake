@@ -62,11 +62,21 @@ namespace :mage do
     end
   end
 
+  namespace :modman do
+    desc 'Initialize modman.'
+    task :init do
+      if !File.exists?(%x{which git}.chomp) then
+        raise "Can't initialize modman, missing git."
+      end
+
+      if !File.exists?(%x{which modman}.chomp) then
+        raise "Can't initialize modman, missing modman (silly)."
+      end
+
+      sh %{cd #{current_path} && modman init}
+    end
+  end
+
   desc 'Runs backup:db and backup:files to create full site backup.'
   task :backup => ["backup:db", "backup:files"]
-
-  desc 'Reindex everything.'
-  task :reindex do
-    sh %{cd #{current_path}/shell && php -f indexer.php -- --reindexall}
-  end
 end
