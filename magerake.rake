@@ -30,24 +30,8 @@ namespace :mage do
 
     desc 'Dump the database to file without log tables.'
     task :db do
-      require 'nokogiri'
-      doc = Nokogiri::XML(File.open("#{current_path}/app/etc/local.xml"))
-      host = doc.xpath('///default_setup/connection/host').first.text
-      if !host.empty? then
-        host = "-h#{host}"
-      end
-
-      username = doc.xpath('///default_setup/connection/username').first.text
-      if !username.empty? then 
-        username = "-u#{username}"
-      end
-    
-      password = doc.xpath('///default_setup/connection/password').first.text
-      if !password.empty? then
-        password = "-p#{password}"
-      end
-
-      dbname = doc.xpath('///default_setup/connection/dbname').first.text
+      doc = get_config
+      host, username, password, dbname = get_db_credentials
       ignore_tables = ''
       ["customer", "quote", "summary", "summary_type", "url", "url_info", "visitor", "visitor_info", "visitor_online"].each do |table|
         ignore_tables << " --ignore-table=#{dbname}.log_#{table}"
@@ -75,4 +59,33 @@ namespace :mage do
       sh %{cd #{current_path} && modman init}
     end
   end
+end
+
+def get_config
+  require 'nokogiri'
+  Nokogiri::XML(File.open("#{current_path}/app/etc/local.xml"))
+end
+
+def get_db_credentials
+  require 'nokogiri'
+  Nokogiri::XML(File.open("#{current_path}/app/etc/local.xml"))
+
+  host = doc.xpath('///default_setup/connection/host').first.text
+  if !host.empty? then
+    host = "-h#{host}"
+  end
+
+  username = doc.xpath('///default_setup/connection/username').first.text
+  if !username.empty? then
+    username = "-u#{username}"
+  end
+
+  password = doc.xpath('///default_setup/connection/password').first.text
+  if !password.empty? then
+    password = "-p#{password}"
+  end
+
+  dbname = doc.xpath('///default_setup/connection/dbname').first.text
+
+  return host, username, password, dbname
 end
