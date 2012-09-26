@@ -65,10 +65,6 @@ namespace :mage do
   namespace :modman do
     desc 'Initialize modman.'
     task :init do
-      if !File.exists?(%x{which git}.chomp) then
-        raise "Can't initialize modman, missing git."
-      end
-
       if !File.exists?(%x{which modman}.chomp) then
         raise "Can't initialize modman, missing modman (silly)."
       end
