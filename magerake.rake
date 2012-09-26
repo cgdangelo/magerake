@@ -62,6 +62,9 @@ namespace :mage do
     end
   end
 
+  desc 'Runs backup:db and backup:files to create full site backup.'
+  task :backup => ["backup:db", "backup:files"]
+
   namespace :modman do
     desc 'Initialize modman.'
     task :init do
@@ -72,7 +75,4 @@ namespace :mage do
       sh %{cd #{current_path} && modman init}
     end
   end
-
-  desc 'Runs backup:db and backup:files to create full site backup.'
-  task :backup => ["backup:db", "backup:files"]
 end
