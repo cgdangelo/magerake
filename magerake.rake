@@ -8,6 +8,26 @@ namespace :mage do
     sh %{cd #{current_path} && rm -rf var/cache/*}
   end
 
+  desc 'Clear sessions data.'
+  task :cs do
+    doc = get_config
+    sessions = doc.xpath('///session_save').text
+
+    case sessions
+    when "files"
+      sh %{cd #{current_path} && rm -rf var/sessions/*}
+    when "db"
+      host, username, password, dbname = get_db_credentials
+      table_prefix = doc.xpath('////db/table_prefix').text
+
+      if !table_prefix.empty?
+        table_prefix = table_prefix + '_'
+      end
+
+      sh %{mysql #{username} #{password} #{dbname} -e "TRUNCATE #{table_prefix}core_session"}
+    end
+  end
+
   namespace :watch do
     desc 'Watch the Magento system log.'
     task :system do
